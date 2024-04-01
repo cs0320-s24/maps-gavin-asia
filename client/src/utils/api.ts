@@ -17,6 +17,13 @@ async function queryAPI(
   return response.json();
 }
 
+export async function getBroadband(stateIn: string, countyIn: string) {
+  return await queryAPI("broadband", {
+    county: countyIn,
+    state: stateIn,
+  });
+}
+
 export async function addWord(word: string) {
   return await queryAPI("add-word", {
     uid: getLoginCookie() || "",

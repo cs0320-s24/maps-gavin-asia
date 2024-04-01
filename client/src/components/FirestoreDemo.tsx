@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addWord, clearUser, getWords } from "../utils/api";
+import { addWord, clearUser, getWords, getBroadband } from "../utils/api";
 import { getLoginCookie } from "../utils/cookie";
 
 export default function FirestoreDemo() {
@@ -18,6 +18,8 @@ export default function FirestoreDemo() {
     setWords([...words, newWord]);
     // - query the backend to add the new word to the database
     await addWord(newWord);
+    let broadbandTest = await getBroadband("newWord", "newWord");
+    console.log(broadbandTest.data);
   };
 
   return (

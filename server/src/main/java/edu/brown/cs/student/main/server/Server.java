@@ -6,6 +6,8 @@ import edu.brown.cs.student.main.server.handlers.AddWordHandler;
 import edu.brown.cs.student.main.server.handlers.ClearUserHandler;
 import edu.brown.cs.student.main.server.handlers.FilteredDataHandler;
 import edu.brown.cs.student.main.server.handlers.ListWordsHandler;
+import edu.brown.cs.student.main.server.handlers.census.BroadbandHandler;
+import edu.brown.cs.student.main.server.handlers.census.CensusAPISource;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.io.IOException;
@@ -34,6 +36,7 @@ public class Server {
       Spark.get("list-words", new ListWordsHandler(firebaseUtils));
       Spark.get("clear-user", new ClearUserHandler(firebaseUtils));
       Spark.get("filtered-geojson", new FilteredDataHandler(firebaseUtils));
+      Spark.get("broadband", new BroadbandHandler(new CensusAPISource()));
 
       Spark.notFound(
           (request, response) -> {

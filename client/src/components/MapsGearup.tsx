@@ -1,26 +1,52 @@
-import { useState } from "react";
-import FirestoreDemo from "./FirestoreDemo";
 import Mapbox from "./Mapbox";
-
-enum Section {
-  FIRESTORE_DEMO = "FIRESTORE_DEMO",
-  MAP_DEMO = "MAP_DEMO",
-}
+import { getBroadband } from "../utils/api";
+import { useState } from "react";
 
 export default function MapsGearup() {
-  const [section, setSection] = useState<Section>(Section.FIRESTORE_DEMO);
+  const [stateInput, setStateInput] = useState("");
+  const [countyInput, setCountyInput] = useState("");
+
+  // Create a state variable to store the broadband data in a map.
+  const[mappedData, _] = useState<Map<string, string>>(new Map());
 
   return (
     <div>
-      <h1 aria-label="Gearup Title">Maps Gearup</h1>
-      <button onClick={() => setSection(Section.FIRESTORE_DEMO)}>
-        Section 1: Firestore Demo
+      <h1 aria-label="Maps Title">Maplette 🎀💀🗿</h1>
+      {/* Add input boxe for state. */ "State: "}
+      <input
+        aria-label="state-input"
+        id="state"
+        type="text"
+        value={stateInput}
+        placeholder="Enter state here!"
+        onChange={(ev) => setStateInput(ev.target.value)}
+      />
+      <br />
+      {/* Add input box for county. */ "County: "}
+      <input
+        aria-label="county-input"
+        id="county"
+        type="text"
+        value={countyInput}
+        placeholder="Enter county here!"
+        onChange={(ev) => setCountyInput(ev.target.value)}
+      />
+      <br />
+      {/* Add a button that, when clicked, queries the backend for broadband data */}
+      <button
+        onClick={async () => {
+          setCountyInput("");
+          setStateInput("");
+          let res = await getBroadband(stateInput, countyInput);
+          if (res.data !== undefined) {
+            // Add the data to the map.
+            mappedData.set(res.data[0] + res.data[1], res.data[2]);
+          }
+        }}
+      >
+        Get Broadband Data!
       </button>
-      <button onClick={() => setSection(Section.MAP_DEMO)}>
-        Section 2: Mapbox Demo
-      </button>
-      {section === Section.FIRESTORE_DEMO ? <FirestoreDemo /> : null}
-      {section === Section.MAP_DEMO ? <Mapbox /> : null}
+      {<Mapbox mappedData={mappedData}/>}
     </div>
   );
 }

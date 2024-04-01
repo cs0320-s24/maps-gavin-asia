@@ -1,6 +1,7 @@
 import { FeatureCollection } from "geojson";
 import { FillLayer } from "react-map-gl";
 import rl_data from "../geodata/fullDownload.json";
+import county_state from "../geodata/counties.json";
 
 const propertyName = "grade";
 export const geoLayer: FillLayer = {
@@ -24,19 +25,50 @@ export const geoLayer: FillLayer = {
   },
 };
 
-// TODO: MAPS PART 4:
-// - Download and import the geojson file
-// - Implement the two functions below.
+export function broadbandLayer() {
+  const broadbandLayer: FillLayer = {
+    id: "broadband_data",
+    type: "fill",
+    paint: {
+      "fill-color": "#000000",
+      "fill-opacity": 0.2,
+    },
+  };
+  return broadbandLayer;
+}
 
-// Import the raw JSON file
-// import rl_data from "../geodata/fullDownload.json";
-// you may need to rename the downloaded .geojson to .json
+export function filterGeoJSONData(
+  geojsonData: GeoJSON.FeatureCollection,
+  data: Map<string, string>
+) {
+  // Filter the features
+  const filteredFeatures = geojsonData.features.filter((feature) => {
+    const statefp = feature.properties?.STATEFP;
+    const countyfp = feature.properties?.COUNTYFP;
+
+    // Check if this feature matches any state-county pair
+    return data.has(statefp + countyfp);
+  });
+
+  // Return new GeoJSON object
+  return {
+    ...geojsonData,
+    features: filteredFeatures,
+  };
+}
 
 function isFeatureCollection(json: any): json is FeatureCollection {
   return json.type === "FeatureCollection";
 }
 
 export function overlayData(): GeoJSON.FeatureCollection | undefined {
-  // ....
   return isFeatureCollection(rl_data) ? rl_data : undefined;
+}
+
+export function broadbandOverlay(
+  data: Map<string, string>
+): GeoJSON.FeatureCollection | undefined {
+  return isFeatureCollection(county_state)
+    ? filterGeoJSONData(county_state, data)
+    : undefined;
 }
