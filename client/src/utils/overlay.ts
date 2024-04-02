@@ -21,7 +21,7 @@ export const geoLayer: FillLayer = {
       "#d11d1d",
       "#ccc",
     ],
-    "fill-opacity": 0.2,
+    "fill-opacity": 0.4,
   },
 };
 
@@ -31,7 +31,7 @@ export function broadbandLayer() {
     type: "fill",
     paint: {
       "fill-color": "#000000",
-      "fill-opacity": 0.2,
+      "fill-opacity": 0.4,
     },
   };
   return broadbandLayer;
