@@ -2,17 +2,16 @@ package edu.brown.cs.student.main.server.handlers;
 
 import edu.brown.cs.student.main.server.storage.StorageInterface;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class ListWordsHandler implements Route {
+public class AddPinHandler implements Route {
 
   public StorageInterface storageHandler;
 
-  public ListWordsHandler(StorageInterface storageHandler) {
+  public AddPinHandler(StorageInterface storageHandler) {
     this.storageHandler = storageHandler;
   }
 
@@ -27,18 +26,24 @@ public class ListWordsHandler implements Route {
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
     try {
+      // collect parameters from the request
       String uid = request.queryParams("uid");
+      String longitude = request.queryParams("long");
+      String latitude = request.queryParams("lat");
 
-      System.out.println("listing words for user: " + uid);
+      Map<String, Object> data = new HashMap<>();
+      String pinPos = longitude + "," + latitude;
+      data.put("pin", pinPos);
 
-      // get all the words for the user
-      List<Map<String, Object>> vals = this.storageHandler.getCollection(uid, "words");
+      // get the current word count to make a unique word_id by index.
+      int pinCount = this.storageHandler.getCollection(uid, "pins").size();
+      String pinId = "pin-" + pinCount;
 
-      // convert the key,value map to just a list of the words.
-      List<String> words = vals.stream().map(word -> word.get("word").toString()).toList();
+      // use the storage handler to add the document to the database
+      this.storageHandler.addDocument(uid, "pins", pinId, data);
 
       responseMap.put("response_type", "success");
-      responseMap.put("words", words);
+      responseMap.put("pin", pinPos);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();
