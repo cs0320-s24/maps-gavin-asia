@@ -6,3 +6,8 @@ interface ImportMetaEnv {
 interface ImportMeta {
   env: ImportMetaEnv;
 }
+
+declare module "*.png" {
+  const value: any;
+  export = value;
+}

@@ -2,10 +2,10 @@ package edu.brown.cs.student.main.server;
 
 import static spark.Spark.after;
 
-import edu.brown.cs.student.main.server.handlers.AddWordHandler;
+import edu.brown.cs.student.main.server.handlers.AddPinHandler;
 import edu.brown.cs.student.main.server.handlers.ClearUserHandler;
 import edu.brown.cs.student.main.server.handlers.FilteredDataHandler;
-import edu.brown.cs.student.main.server.handlers.ListWordsHandler;
+import edu.brown.cs.student.main.server.handlers.ListPinsHandler;
 import edu.brown.cs.student.main.server.handlers.census.BroadbandHandler;
 import edu.brown.cs.student.main.server.handlers.census.CensusAPISource;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
@@ -32,8 +32,8 @@ public class Server {
     try {
       firebaseUtils = new FirebaseUtilities();
 
-      Spark.get("add-word", new AddWordHandler(firebaseUtils));
-      Spark.get("list-words", new ListWordsHandler(firebaseUtils));
+      Spark.get("add-pin", new AddPinHandler(firebaseUtils));
+      Spark.get("list-pins", new ListPinsHandler(firebaseUtils));
       Spark.get("clear-user", new ClearUserHandler(firebaseUtils));
       Spark.get("filtered-geojson", new FilteredDataHandler(firebaseUtils));
       Spark.get("broadband", new BroadbandHandler(new CensusAPISource()));

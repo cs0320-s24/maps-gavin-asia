@@ -1,13 +1,16 @@
 import Mapbox from "./Mapbox";
-import { getBroadband } from "../utils/api";
+import { getBroadband, clearUser } from "../utils/api";
 import { useState } from "react";
+import { LatLong } from "../components/Mapbox";
 
 export default function MapsGearup() {
   const [stateInput, setStateInput] = useState("");
   const [countyInput, setCountyInput] = useState("");
 
   // Create a state variable to store the broadband data in a map.
-  const[mappedData, _] = useState<Map<string, string>>(new Map());
+  const [mappedData, setMappedData] = useState<Map<string, string>>(new Map());
+  // Create a state variable to store the pins.
+  const [pins, setPins] = useState<LatLong[]>([]);
 
   return (
     <div>
@@ -46,7 +49,19 @@ export default function MapsGearup() {
       >
         Get Broadband Data!
       </button>
-      {<Mapbox mappedData={mappedData}/>}
+      <br />
+      <button
+        onClick={async () => {
+          setCountyInput("");
+          setStateInput("");
+          setMappedData(new Map());
+          await clearUser();
+          setPins([]);
+        }}
+      >
+        Clear All User Data!
+      </button>
+      {<Mapbox mappedData={mappedData} pins={pins} setPins={setPins} />}
     </div>
   );
 }

@@ -6,8 +6,6 @@ async function queryAPI(
   endpoint: string,
   query_params: Record<string, string>
 ) {
-  // query_params is a dictionary of key-value pairs that gets added to the URL as query parameters
-  // e.g. { foo: "bar", hell: "o" } becomes "?foo=bar&hell=o"
   const paramsString = new URLSearchParams(query_params).toString();
   const url = `${HOST}/${endpoint}?${paramsString}`;
   const response = await fetch(url);
@@ -24,15 +22,16 @@ export async function getBroadband(stateIn: string, countyIn: string) {
   });
 }
 
-export async function addWord(word: string) {
-  return await queryAPI("add-word", {
+export async function addPin(longIn: string, latIn: string) {
+  return await queryAPI("add-pin", {
     uid: getLoginCookie() || "",
-    word: word,
+    long: longIn,
+    lat: latIn,
   });
 }
 
-export async function getWords() {
-  return await queryAPI("list-words", {
+export async function getPins() {
+  return await queryAPI("list-pins", {
     uid: getLoginCookie() || "",
   });
 }
