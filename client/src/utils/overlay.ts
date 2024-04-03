@@ -1,9 +1,8 @@
 import { FeatureCollection } from "geojson";
 import { FillLayer } from "react-map-gl";
-import rl_data from "../geodata/fullDownload.json";
 import county_state from "../geodata/counties.json";
 
-const propertyName = "grade";
+const propertyName = "holc_grade";
 export const geoLayer: FillLayer = {
   id: "geo_data",
   type: "fill",
@@ -25,17 +24,23 @@ export const geoLayer: FillLayer = {
   },
 };
 
-export function broadbandLayer() {
-  const broadbandLayer: FillLayer = {
+export const areaLayer: FillLayer = {
+    id: "area_data",
+    type: "fill",
+    paint: {
+      "fill-color": "#ffffff",
+      "fill-opacity": 0.6,
+    },
+  };
+
+export const broadbandLayer: FillLayer = {
     id: "broadband_data",
     type: "fill",
     paint: {
       "fill-color": "#000000",
       "fill-opacity": 0.4,
     },
-  };
-  return broadbandLayer;
-}
+};
 
 export function filterGeoJSONData(
   geojsonData: GeoJSON.FeatureCollection,
@@ -61,8 +66,8 @@ function isFeatureCollection(json: any): json is FeatureCollection {
   return json.type === "FeatureCollection";
 }
 
-export function overlayData(): GeoJSON.FeatureCollection | undefined {
-  return isFeatureCollection(rl_data) ? rl_data : undefined;
+export function overlayData(json: any): GeoJSON.FeatureCollection | undefined {
+  return isFeatureCollection(json) ? json : undefined;
 }
 
 export function broadbandOverlay(
