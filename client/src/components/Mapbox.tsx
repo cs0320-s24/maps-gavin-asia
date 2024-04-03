@@ -11,6 +11,7 @@ import Map, {
 } from "react-map-gl";
 import {
   geoLayer,
+  areaLayer,
   overlayData,
   broadbandLayer,
   broadbandOverlay,
@@ -29,7 +30,7 @@ export interface LatLong {
   long: number;
 }
 
-const ProvidenceLatLong: LatLong = {
+export const ProvidenceLatLong: LatLong = {
   lat: 41.824,
   long: -71.4128,
 };
@@ -40,6 +41,8 @@ interface MapboxProps {
   pins: LatLong[];
   setPins: Dispatch<SetStateAction<LatLong[]>>;
   flyCoords: LatLong;
+  redliningData: GeoJSON.FeatureCollection | undefined;
+  areaData: GeoJSON.FeatureCollection | undefined;
 }
 
 export const getFeatureCenter = (feature: GeoJSON.Feature) => {
@@ -72,6 +75,10 @@ export default function Mapbox(props: MapboxProps) {
   );
 
   const [broadband, setBroadband] = useState<
+    GeoJSON.FeatureCollection | undefined
+  >(undefined);
+
+  const [areaOverlay, setAreaOverlay] = useState<
     GeoJSON.FeatureCollection | undefined
   >(undefined);
 
@@ -128,11 +135,17 @@ export default function Mapbox(props: MapboxProps) {
   useEffect(() => {
     if (props.flyCoords) {
       flyToLocation(props.flyCoords.lat, props.flyCoords.long);
+      setBroadband(broadbandOverlay(props.mappedData));
     }
   }, [props.flyCoords]);
 
   useEffect(() => {
-    setOverlay(overlayData());
+    if (props.redliningData) {
+      setOverlay(overlayData(props.redliningData));
+    }
+    if (props.areaData) {
+      setAreaOverlay(overlayData(props.areaData));
+    }
     setBroadband(broadbandOverlay(props.mappedData));
 
     getPins().then((data) => {
@@ -166,7 +179,7 @@ export default function Mapbox(props: MapboxProps) {
       window.removeEventListener("keydown", hDown);
       window.removeEventListener("keyup", hUp);
     };
-  }, [props.mappedData]);
+  }, [props.mappedData, props.redliningData, props.areaData]);
 
   return (
     <div className="map">
@@ -191,11 +204,19 @@ export default function Mapbox(props: MapboxProps) {
         onMouseLeave={onLeave}
         ref={mapRef}
       >
-        <Source id="geo_data" type="geojson" data={overlay}>
-          <Layer {...geoLayer} />
-        </Source>
+        {" "}
+        {props.redliningData && (
+          <Source id="geo_data" type="geojson" data={overlay}>
+            <Layer {...geoLayer} />
+          </Source>
+        )}
+        {props.areaData && (
+          <Source id="area_data" type="geojson" data={areaOverlay}>
+            <Layer {...areaLayer} />
+          </Source>
+        )}
         <Source id="broadband_data" type="geojson" data={broadband}>
-          <Layer {...broadbandLayer()} />
+          <Layer {...broadbandLayer} />
         </Source>
         {popupHover && !hPressed && (
           <Popup

@@ -15,6 +15,21 @@ async function queryAPI(
   return response.json();
 }
 
+export async function getFilteredRedlining(minLat: number, maxLat: number, minLong: number, maxLong: number) {
+  return await queryAPI("filtered-geojson", {
+    minLat: minLat.toString(),
+    maxLat: maxLat.toString(),
+    minLong: minLong.toString(),
+    maxLong: maxLong.toString(),
+  });
+}
+
+export async function getKeywords(areaData: string) {
+  return await queryAPI("filtered-keywords", {
+    keyWord: areaData,
+  });
+}
+
 export async function getBroadband(stateIn: string, countyIn: string) {
   return await queryAPI("broadband", {
     county: countyIn,
