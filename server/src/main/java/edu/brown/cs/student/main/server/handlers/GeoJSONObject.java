@@ -57,5 +57,5 @@ public class GeoJSONObject {
     GeoJSONObject filteredGeoJSONObject = new GeoJSONObject();
     filteredGeoJSONObject.type = this.type;
     filteredGeoJSONObject.features = filteredFeatures;
-
-    return filtere
+    return filteredGeoJSONObject
+  }
