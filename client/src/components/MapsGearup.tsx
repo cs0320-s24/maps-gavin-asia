@@ -1,6 +1,6 @@
 import Mapbox from "./Mapbox";
-import { getBroadband, clearUser } from "../utils/api";
-import { useState } from "react";
+import { getBroadband, clearUser, getFilteredRedlining } from "../utils/api";
+import { useState, useEffect } from "react";
 import { LatLong } from "../components/Mapbox";
 import { broadbandOverlay } from "../utils/overlay";
 import { getFeatureCenter } from "./Mapbox";
@@ -9,6 +9,24 @@ export default function MapsGearup() {
   const [stateInput, setStateInput] = useState("");
   const [countyInput, setCountyInput] = useState("");
   const [flyCoords, setFlyCoords] = useState<LatLong>({ lat: 0, long: 0 });
+  const [redliningData, setRedliningData] =
+    useState<GeoJSON.FeatureCollection>();
+
+  useEffect(() => {
+    // Asynchronously fetch redlining data
+    async function fetchRedliningData() {
+      try {
+        let json = await getFilteredRedlining(20.0, 50.0, -130.0, -70.0);
+        setRedliningData(json.data);
+        console.log("Fetched redlining data:", json.data);
+      } catch (error) {
+        console.error("Failed to fetch redlining data:", error);
+        // Handle error appropriately
+      }
+    }
+
+    fetchRedliningData();
+  }, []);
 
   // Function to handle broadband click:
   async function handleBroadbandClick() {
@@ -87,6 +105,7 @@ export default function MapsGearup() {
           pins={pins}
           setPins={setPins}
           flyCoords={flyCoords}
+          redliningData={redliningData}
         />
       }
     </div>
