@@ -1,16 +1,23 @@
 import Mapbox from "./Mapbox";
-import { getBroadband, clearUser, getFilteredRedlining } from "../utils/api";
+import {
+  getBroadband,
+  clearUser,
+  getFilteredRedlining,
+  getKeywords,
+} from "../utils/api";
 import { useState, useEffect } from "react";
-import { LatLong } from "../components/Mapbox";
+import { LatLong, ProvidenceLatLong } from "../components/Mapbox";
 import { broadbandOverlay } from "../utils/overlay";
 import { getFeatureCenter } from "./Mapbox";
 
 export default function MapsGearup() {
   const [stateInput, setStateInput] = useState("");
   const [countyInput, setCountyInput] = useState("");
-  const [flyCoords, setFlyCoords] = useState<LatLong>({ lat: 0, long: 0 });
+  const [areaInput, setAreaInput] = useState("");
+  const [flyCoords, setFlyCoords] = useState<LatLong>(ProvidenceLatLong);
   const [redliningData, setRedliningData] =
     useState<GeoJSON.FeatureCollection>();
+  const [areaData, setAreaData] = useState<GeoJSON.FeatureCollection>();
 
   useEffect(() => {
     // Asynchronously fetch redlining data
@@ -27,6 +34,17 @@ export default function MapsGearup() {
 
     fetchRedliningData();
   }, []);
+
+  async function handleAreaClick() {
+    setAreaInput("");
+    try {
+      let json = await getKeywords(areaInput);
+      setAreaData(json.data);
+      console.log("Fetched area data:", json.data);
+    } catch (error) {
+      console.error("Failed to fetch area data:", error);
+    }
+  }
 
   // Function to handle broadband click:
   async function handleBroadbandClick() {
@@ -88,6 +106,24 @@ export default function MapsGearup() {
         Get Broadband Data!
       </button>
       <br />
+      {/* Add input box for area. */ "Area Descriptor: "}
+      <input
+        aria-label="area-input"
+        id="area"
+        type="text"
+        value={areaInput}
+        placeholder="Enter area keyword!"
+        onChange={(ev) => setAreaInput(ev.target.value)}
+      />
+      <br />
+      <button
+        onClick={async () => {
+          await handleAreaClick();
+        }}
+      >
+        Get Area Data!
+      </button>
+      <br />
       <button
         onClick={async () => {
           setCountyInput("");
@@ -106,6 +142,7 @@ export default function MapsGearup() {
           setPins={setPins}
           flyCoords={flyCoords}
           redliningData={redliningData}
+          areaData={areaData}
         />
       }
     </div>

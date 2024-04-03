@@ -3,6 +3,8 @@ package edu.brown.cs.student.main.server.handlers;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -31,5 +33,27 @@ public class Utils {
     JsonAdapter<T> adapter = moshi.adapter(targetType);
 
     return adapter.fromJson(source);
+  }
+
+  public static GeoJSONObject getRedLiningTotal() {
+    String filePath = "data/geojson/fullDownload.json";
+    try {
+      // ***************** READING THE FILE *****************
+      FileReader jsonReader = new FileReader(filePath);
+      BufferedReader br = new BufferedReader(jsonReader);
+      String fileString = "";
+      String line = br.readLine();
+      while (line != null) {
+        fileString = fileString + line;
+        line = br.readLine();
+      }
+      jsonReader.close();
+
+      // ****************** CREATING THE ADAPTER **********
+      return Utils.fromJsonGeneral(fileString, GeoJSONObject.class);
+    } catch (IOException e) {
+      System.out.println(e.getMessage());
+      return null;
+    }
   }
 }

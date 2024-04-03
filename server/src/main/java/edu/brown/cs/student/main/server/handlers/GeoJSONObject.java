@@ -48,31 +48,14 @@ public class GeoJSONObject {
     return filteredGeoJSONObject;
   }
 
-  private boolean isFeatureWithinBounds(
-      Feature feature, Double minLat, Double maxLat, Double minLong, Double maxLong) {
+  public GeoJSONObject filterKeyWords(String keyWord) {
+    List<Feature> filteredFeatures =
+        features.stream()
+            .filter(feature -> isFeatureWithDescription(feature, keyWord))
+            .collect(Collectors.toList());
 
-    // Check for null feature or geometry
-    if (feature == null || feature.geometry == null || feature.geometry.coordinates.isEmpty()) {
-      return false;
-    }
+    GeoJSONObject filteredGeoJSONObject = new GeoJSONObject();
+    filteredGeoJSONObject.type = this.type;
+    filteredGeoJSONObject.features = filteredFeatures;
 
-    try {
-      // Access the first point of the first list of lists of lists of coordinates
-      List<List<List<List<Double>>>> coordinates = feature.geometry.coordinates;
-      List<Double> firstPoint = coordinates.get(0).get(0).get(0);
-
-      // Check if the first point is within bounds
-      Double longitude = firstPoint.get(0);
-      Double latitude = firstPoint.get(1);
-
-      boolean inBounds =
-          longitude >= minLong && longitude <= maxLong && latitude >= minLat && latitude <= maxLat;
-
-      return inBounds;
-    } catch (IndexOutOfBoundsException e) {
-      // Catch any exceptions related to accessing the nested lists, returning false in such cases
-      System.out.println("Exception accessing coordinates: " + e.getMessage());
-      return false;
-    }
-  }
-}
+    return filtere

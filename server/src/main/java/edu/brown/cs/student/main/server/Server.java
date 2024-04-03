@@ -5,7 +5,10 @@ import static spark.Spark.after;
 import edu.brown.cs.student.main.server.handlers.AddPinHandler;
 import edu.brown.cs.student.main.server.handlers.ClearUserHandler;
 import edu.brown.cs.student.main.server.handlers.FilteredDataHandler;
+import edu.brown.cs.student.main.server.handlers.GeoJSONObject;
+import edu.brown.cs.student.main.server.handlers.KeywordFilterHandler;
 import edu.brown.cs.student.main.server.handlers.ListPinsHandler;
+import edu.brown.cs.student.main.server.handlers.Utils;
 import edu.brown.cs.student.main.server.handlers.census.BroadbandHandler;
 import edu.brown.cs.student.main.server.handlers.census.CensusAPISource;
 import edu.brown.cs.student.main.server.storage.FirebaseUtilities;
@@ -29,13 +32,16 @@ public class Server {
             });
 
     StorageInterface firebaseUtils;
+    GeoJSONObject geoJSONObject;
     try {
       firebaseUtils = new FirebaseUtilities();
+      geoJSONObject = Utils.getRedLiningTotal();
 
       Spark.get("add-pin", new AddPinHandler(firebaseUtils));
       Spark.get("list-pins", new ListPinsHandler(firebaseUtils));
       Spark.get("clear-user", new ClearUserHandler(firebaseUtils));
-      Spark.get("filtered-geojson", new FilteredDataHandler(firebaseUtils));
+      Spark.get("filtered-geojson", new FilteredDataHandler(geoJSONObject));
+      Spark.get("filtered-keywords", new KeywordFilterHandler(geoJSONObject));
       Spark.get("broadband", new BroadbandHandler(new CensusAPISource()));
 
       Spark.notFound(

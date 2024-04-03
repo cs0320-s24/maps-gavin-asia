@@ -1,9 +1,5 @@
 package edu.brown.cs.student.main.server.handlers;
 
-import edu.brown.cs.student.main.server.storage.StorageInterface;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import spark.Request;
@@ -12,29 +8,10 @@ import spark.Route;
 
 public class FilteredDataHandler implements Route {
 
-  public StorageInterface storageHandler;
   public GeoJSONObject geoJSONObject;
 
-  public FilteredDataHandler(StorageInterface storageHandler) {
-    this.storageHandler = storageHandler;
-    String filePath = "data/geojson/fullDownload.json";
-    try {
-      // ***************** READING THE FILE *****************
-      FileReader jsonReader = new FileReader(filePath);
-      BufferedReader br = new BufferedReader(jsonReader);
-      String fileString = "";
-      String line = br.readLine();
-      while (line != null) {
-        fileString = fileString + line;
-        line = br.readLine();
-      }
-      jsonReader.close();
-
-      // ****************** CREATING THE ADAPTER **********
-      this.geoJSONObject = Utils.fromJsonGeneral(fileString, GeoJSONObject.class);
-    } catch (IOException e) {
-      System.out.println(e.getMessage());
-    }
+  public FilteredDataHandler(GeoJSONObject geoJSONObject) {
+    this.geoJSONObject = geoJSONObject;
   }
 
   @Override

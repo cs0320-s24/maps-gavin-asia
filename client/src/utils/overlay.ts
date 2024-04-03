@@ -24,17 +24,23 @@ export const geoLayer: FillLayer = {
   },
 };
 
-export function broadbandLayer() {
-  const broadbandLayer: FillLayer = {
+export const areaLayer: FillLayer = {
+    id: "area_data",
+    type: "fill",
+    paint: {
+      "fill-color": "#ffffff",
+      "fill-opacity": 0.6,
+    },
+  };
+
+export const broadbandLayer: FillLayer = {
     id: "broadband_data",
     type: "fill",
     paint: {
       "fill-color": "#000000",
       "fill-opacity": 0.4,
     },
-  };
-  return broadbandLayer;
-}
+};
 
 export function filterGeoJSONData(
   geojsonData: GeoJSON.FeatureCollection,

@@ -24,6 +24,12 @@ export async function getFilteredRedlining(minLat: number, maxLat: number, minLo
   });
 }
 
+export async function getKeywords(areaData: string) {
+  return await queryAPI("filtered-keywords", {
+    keyWord: areaData,
+  });
+}
+
 export async function getBroadband(stateIn: string, countyIn: string) {
   return await queryAPI("broadband", {
     county: countyIn,
