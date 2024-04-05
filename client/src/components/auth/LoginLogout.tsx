@@ -2,6 +2,9 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import React from "react";
 import { addLoginCookie, removeLoginCookie } from "../../utils/cookie";
 
+/**
+ * A class that handles login and logout functionality.
+ */
 export interface ILoginPageProps {
   loggedIn: boolean;
   setLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,7 +21,7 @@ const Login: React.FunctionComponent<ILoginPageProps> = (props) => {
       // Check if the email ends with the allowed domain
       if (userEmail.endsWith("@brown.edu")) {
         console.log(response.user.uid);
-        // add unique user id as a cookie to the browser.
+        // Add unique user id as a cookie to the browser.
         addLoginCookie(response.user.uid);
         props.setLogin(true);
       } else {

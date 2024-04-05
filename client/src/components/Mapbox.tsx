@@ -17,25 +17,32 @@ import {
   broadbandOverlay,
 } from "../utils/overlay";
 import { addPin, getPins } from "../utils/api";
-
 import mapPin from "../components/pin.png";
+
+/**
+ * A class that represents the various features of the map.
+ */
 
 const MAPBOX_API_KEY = process.env.MAPBOX_TOKEN;
 if (!MAPBOX_API_KEY) {
   console.error("Mapbox API key not found. Please add it to your .env file.");
 }
 
+//Interface that combines latitude and longitude.
 export interface LatLong {
   lat: number;
   long: number;
 }
 
+//Constant that represents location of Providence.
 export const ProvidenceLatLong: LatLong = {
   lat: 41.824,
   long: -71.4128,
 };
+//Constant that represents initial zoom when map is first rendered.
 const initialZoom = 10;
 
+//Props for Mapbox features.
 interface MapboxProps {
   mappedData: Map<string, string>;
   pins: LatLong[];
@@ -45,15 +52,22 @@ interface MapboxProps {
   areaData: GeoJSON.FeatureCollection | undefined;
 }
 
+/**
+ * Function that gets the center of a geometric feature.
+ * @param feature the feature we want to get the center of.
+ * @returns if polygon: the geometric center of our feature, if not: 0,0.
+ */
 export const getFeatureCenter = (feature: GeoJSON.Feature) => {
   if (feature.geometry.type === "Polygon") {
     let coords = feature.geometry.coordinates;
     let avgLat = 0;
     let avgLong = 0;
+    //Loop through the feature's coordinates and sum up the latitude and longitude.
     for (let i = 0; i < coords[0].length; i++) {
       avgLat += coords[0][i][1];
       avgLong += coords[0][i][0];
     }
+    //Get the average latitude and longitude.
     avgLat /= coords[0].length;
     avgLong /= coords[0].length;
     return { latitude: avgLat, longitude: avgLong };
@@ -62,6 +76,7 @@ export const getFeatureCenter = (feature: GeoJSON.Feature) => {
 };
 
 export default function Mapbox(props: MapboxProps) {
+  //Sets the intial state of the map to Providence.
   const [viewState, setViewState] = useState({
     latitude: ProvidenceLatLong.lat,
     longitude: ProvidenceLatLong.long,
@@ -70,33 +85,46 @@ export default function Mapbox(props: MapboxProps) {
 
   const mapRef = useRef<MapRef>(null);
 
+  //Create a state variable to store redlining overlay.
   const [overlay, setOverlay] = useState<GeoJSON.FeatureCollection | undefined>(
     undefined
   );
 
+  //Create a state variable to store broadband overlay.
   const [broadband, setBroadband] = useState<
     GeoJSON.FeatureCollection | undefined
   >(undefined);
 
+  //Create a state variable to store area description overlay.
   const [areaOverlay, setAreaOverlay] = useState<
     GeoJSON.FeatureCollection | undefined
   >(undefined);
 
+  /**
+   * Function that defines what happens when user clicks on map — adding pins.
+   * @param e the mouse event.
+   */
   async function onMapClick(e: MapLayerMouseEvent) {
     // Add the pin to the pins array.
     props.setPins([...props.pins, { lat: e.lngLat.lat, long: e.lngLat.lng }]);
     await addPin(e.lngLat.lng.toString(), e.lngLat.lat.toString());
   }
 
+  //Create a state variable to store data for the popup.
   const [popupHover, setPopupHover] = useState<{
     longitude: number;
     latitude: number;
     data: any;
   } | null>(null);
 
+  //Create a state variable to store whether the h key has been pressed.
   const [hPressed, setHPressed] = useState(false);
 
-  // Function to smoothly move the map to a specified location
+  /**
+   * A function that moves the maps current state to the inputted location.
+   * @param latitude latitude of location to move to.
+   * @param longitude longitude of location to move to.
+   */
   const flyToLocation = (latitude: number, longitude: number) => {
     const map = mapRef.current?.getMap();
     if (map) {
@@ -109,14 +137,19 @@ export default function Mapbox(props: MapboxProps) {
     }
   };
 
+  /**
+   * Function that defines what happens when a user hover's over a feature with a broadband overlay.
+   * @param event the mouse event.
+   */
   const onHover = (event: MapLayerMouseEvent) => {
     setBroadband(broadbandOverlay(props.mappedData));
+    //Get the map's current broadband features.
     const features = mapRef.current?.queryRenderedFeatures(event.point, {
       layers: ["broadband_data"],
     });
-
     const feature = features && features[0];
     if (feature && feature.geometry.type === "Polygon") {
+      //Get the center of the feature and set the popup to be there.
       let { latitude: avgLat, longitude: avgLong } = getFeatureCenter(feature);
       setPopupHover({
         longitude: avgLong,
@@ -129,10 +162,12 @@ export default function Mapbox(props: MapboxProps) {
   };
 
   const onLeave = () => {
+    //When we are no longer hovering over a feature.
     setPopupHover(null);
   };
 
   useEffect(() => {
+    //Fly to the location and highlight county broadband data when a user inputs data.
     if (props.flyCoords) {
       flyToLocation(props.flyCoords.lat, props.flyCoords.long);
       setBroadband(broadbandOverlay(props.mappedData));
@@ -183,6 +218,7 @@ export default function Mapbox(props: MapboxProps) {
 
   return (
     <div className="map">
+      {/* Sets the styling of the map */}
       <Map
         mapboxAccessToken={MAPBOX_API_KEY}
         {...viewState}
@@ -196,7 +232,7 @@ export default function Mapbox(props: MapboxProps) {
           "space-color": "#000000",
           "star-intensity": 0.5,
         }}
-        style={{ width: window.innerWidth, height: window.innerHeight }}
+        style={{ width: "100%", height: window.innerHeight }}
         mapStyle={"mapbox://styles/mapbox/satellite-streets-v12"}
         onMove={(ev: ViewStateChangeEvent) => setViewState(ev.viewState)}
         onClick={(ev: MapLayerMouseEvent) => onMapClick(ev)}
@@ -205,16 +241,19 @@ export default function Mapbox(props: MapboxProps) {
         ref={mapRef}
       >
         {" "}
+        {/* Sets the redlining overlay */}
         {props.redliningData && (
           <Source id="geo_data" type="geojson" data={overlay}>
             <Layer {...geoLayer} />
           </Source>
         )}
+        {/* Sets the area description overlay */}
         {props.areaData && (
           <Source id="area_data" type="geojson" data={areaOverlay}>
             <Layer {...areaLayer} />
           </Source>
         )}
+        {/* Sets the broadband overlay */}
         <Source id="broadband_data" type="geojson" data={broadband}>
           <Layer {...broadbandLayer} />
         </Source>
@@ -239,6 +278,7 @@ export default function Mapbox(props: MapboxProps) {
             </div>
           </Popup>
         )}
+        {/* Render each pin at its location with an image */}
         {props.pins.map((pin, index) => (
           <Marker
             key={index}

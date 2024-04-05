@@ -11,6 +11,12 @@ import java.util.Map;
 
 public class Utils {
 
+  /**
+   * Function that converts an object into a JSON.
+   *
+   * @param map the map to convert.
+   * @return the data in JSON format.
+   */
   public static String toMoshiJson(Map<String, Object> map) {
     Moshi moshi = new Moshi.Builder().build();
     Type mapStringObject = Types.newParameterizedType(Map.class, String.class, Object.class);

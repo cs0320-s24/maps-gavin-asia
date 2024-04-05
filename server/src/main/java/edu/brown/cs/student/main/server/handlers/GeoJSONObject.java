@@ -31,9 +31,16 @@ public class GeoJSONObject {
     public Map<String, String> area_description_data;
   }
 
-  // Filter the GeoJSON data to only include the data within the specified latitude and longitude
-  // bounds. The latitude and longitude bounds are specified by the query parameters minLat, maxLat,
-  // minLong, and maxLong.
+  /**
+   * Filter the GeoJSON data to only include the data within the specified latitude and longitude //
+   * bounds.
+   *
+   * @param minLat minimum latitude of area.
+   * @param maxLat maximum latitude of area.
+   * @param minLong minimum longitude of area.
+   * @param maxLong maximum longitude of area.
+   * @return
+   */
   public GeoJSONObject filterData(Double minLat, Double maxLat, Double minLong, Double maxLong) {
 
     List<Feature> filteredFeatures =
@@ -48,6 +55,12 @@ public class GeoJSONObject {
     return filteredGeoJSONObject;
   }
 
+  /**
+   * Filter the GeoJSON data to only include features with the specified keyword in its description.
+   *
+   * @param keyWord
+   * @return
+   */
   public GeoJSONObject filterKeyWords(String keyWord) {
     List<Feature> filteredFeatures =
         features.stream()
@@ -57,8 +70,7 @@ public class GeoJSONObject {
     GeoJSONObject filteredGeoJSONObject = new GeoJSONObject();
     filteredGeoJSONObject.type = this.type;
     filteredGeoJSONObject.features = filteredFeatures;
-
-    return filteredGeoJSONObject
+    return filteredGeoJSONObject;
   }
 
   private boolean isFeatureWithDescription(Feature feature, String keyWord) {
