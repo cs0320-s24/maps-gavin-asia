@@ -58,7 +58,7 @@ public class GeoJSONObject {
     filteredGeoJSONObject.type = this.type;
     filteredGeoJSONObject.features = filteredFeatures;
 
-    return filteredGeoJSONObject;
+    return filteredGeoJSONObject
   }
 
   private boolean isFeatureWithDescription(Feature feature, String keyWord) {

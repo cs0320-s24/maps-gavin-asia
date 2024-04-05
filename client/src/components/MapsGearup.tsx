@@ -77,7 +77,7 @@ export default function MapsGearup() {
   return (
     <div>
       <h1 aria-label="Maps Title">Maplette 🎀💀🗿</h1>
-      {/* Add input boxe for state. */ "State: "}
+      {/* Add input box for state. */ "State: "}
       <input
         aria-label="state-input"
         id="state"
