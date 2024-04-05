@@ -8,6 +8,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * ListPinsHandler is called by the list-pins endpoint in server, and works to retrieve the list of
+ * pins associated with the user who created them.
+ */
 public class ListPinsHandler implements Route {
 
   public StorageInterface storageHandler;
@@ -17,7 +21,7 @@ public class ListPinsHandler implements Route {
   }
 
   /**
-   * Invoked when a request is made on this route's corresponding path e.g. '/hello'
+   * Invoked when a request is made on this route's corresponding path
    *
    * @param request The request object providing information about the HTTP request
    * @param response The response object providing functionality for modifying the response
@@ -29,16 +33,16 @@ public class ListPinsHandler implements Route {
     try {
       String uid = request.queryParams("uid");
 
-      // get all the words for the user
+      // Get all the pins for the user
       List<Map<String, Object>> vals = this.storageHandler.getCollection(uid, "pins");
 
-      // convert the key,value map to just a list of the words.
+      // Convert the key,value map to just a list of the pins.
       List<String> pins = vals.stream().map(pin -> pin.get("pin").toString()).toList();
 
       responseMap.put("response_type", "success");
       responseMap.put("pins", pins);
     } catch (Exception e) {
-      // error likely occurred in the storage handler
+      // Error likely occurred in the storage handler
       e.printStackTrace();
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());

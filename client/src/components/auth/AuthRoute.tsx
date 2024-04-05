@@ -2,6 +2,9 @@ import { useState } from "react";
 import { getLoginCookie } from "../../utils/cookie";
 import LoginLogout from "./LoginLogout";
 
+/**
+ * A class that authorizes user login.
+ */
 interface AuthRouteProps {
   gatedContent: React.ReactNode;
 }
@@ -17,7 +20,6 @@ function AuthRoute(props: AuthRouteProps) {
   return (
     <>
       <LoginLogout loggedIn={loggedIn} setLogin={setLogin} />
-
       {loggedIn ? props.gatedContent : null}
     </>
   );

@@ -7,6 +7,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+/**
+ * AddPinHandler is called by the add pin endpoint in server, and works to set each pin to its
+ * respective data.
+ */
 public class AddPinHandler implements Route {
 
   public StorageInterface storageHandler;
@@ -16,7 +20,7 @@ public class AddPinHandler implements Route {
   }
 
   /**
-   * Invoked when a request is made on this route's corresponding path e.g. '/hello'
+   * Invoked when a request is made on this route's corresponding path
    *
    * @param request The request object providing information about the HTTP request
    * @param response The response object providing functionality for modifying the response
@@ -26,26 +30,27 @@ public class AddPinHandler implements Route {
   public Object handle(Request request, Response response) {
     Map<String, Object> responseMap = new HashMap<>();
     try {
-      // collect parameters from the request
+      // Collect parameters from the request.
       String uid = request.queryParams("uid");
       String longitude = request.queryParams("long");
       String latitude = request.queryParams("lat");
 
       Map<String, Object> data = new HashMap<>();
       String pinPos = longitude + "," + latitude;
+      // Set the pin to its longitude and latitude
       data.put("pin", pinPos);
 
-      // get the current word count to make a unique word_id by index.
+      // Get the current pin count to make a unique pinId by index.
       int pinCount = this.storageHandler.getCollection(uid, "pins").size();
       String pinId = "pin-" + pinCount;
 
-      // use the storage handler to add the document to the database
+      // Use the storage handler to add the document to the database.
       this.storageHandler.addDocument(uid, "pins", pinId, data);
 
       responseMap.put("response_type", "success");
       responseMap.put("pin", pinPos);
     } catch (Exception e) {
-      // error likely occurred in the storage handler
+      // Error likely occurred in the storage handler.
       e.printStackTrace();
       responseMap.put("response_type", "failure");
       responseMap.put("error", e.getMessage());

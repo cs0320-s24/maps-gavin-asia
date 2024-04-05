@@ -3,9 +3,9 @@ import "../styles/App.css";
 import MapsGearup from "./MapsGearup";
 import AuthRoute from "./auth/AuthRoute";
 
-// REMEMBER TO PUT YOUR API KEY IN A FOLDER THAT IS GITIGNORED!!
-// (for instance, /src/private/api_key.tsx)
-// import {API_KEY} from "./private/api_key"
+/**
+ * App class that starts everything!
+ */
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
